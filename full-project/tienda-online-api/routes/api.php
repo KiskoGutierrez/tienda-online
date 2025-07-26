@@ -7,32 +7,35 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\CompraController;
 
-// 🌐 Login con Google usando redirección (opcional, si usas OAuth flow tradicional)
+// Rutas para autenticación con Google usando redirección (OAuth tradicional)
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect']);
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback']);
 
-// 🔐 Login local con email/contraseña
+// Ruta para login local con email y contraseña
 Route::post('/login', [AuthController::class, 'login']);
 
-// 🌐 Login con Google desde frontend (token basado)
+// Ruta para login con Google desde frontend usando token
 Route::post('/login/google', [AuthController::class, 'loginConGoogle']);
 
-// 📦 Productos públicos
+// Ruta pública para obtener la lista de productos
 Route::get('/productos', [ProductoController::class, 'index']);
 
-// 🔐 Rutas protegidas con JWT
+// Grupo de rutas protegidas con middleware JWT para usuarios autenticados
 Route::middleware(['jwt.auth'])->group(function () {
 
-    // 🛒 Carrito
-    Route::post('/carrito', [CarritoController::class, 'addToCart']); // Añadir producto
-    Route::get('/carrito', [CarritoController::class, 'viewCart']);  // Ver carrito
-    Route::delete('/carrito/{id}', [CarritoController::class, 'removeFromCart']); // Eliminar producto
+    // Añadir producto al carrito
+    Route::post('/carrito', [CarritoController::class, 'addToCart']);
+    // Ver contenido del carrito
+    Route::get('/carrito', [CarritoController::class, 'viewCart']);
+    // Eliminar un producto del carrito por id
+    Route::delete('/carrito/{id}', [CarritoController::class, 'removeFromCart']);
 
-    // 🧾 Compras
-    Route::post('/compra', [CompraController::class, 'confirmar']); // Confirmar compra
-    Route::get('/compra', [CompraController::class, 'historial']); // Ver historial de compras
+    // Confirmar una compra
+    Route::post('/compra', [CompraController::class, 'confirmar']);
+    // Ver historial de compras del usuario
+    Route::get('/compra', [CompraController::class, 'historial']);
 
-    // 👤 Info del usuario autenticado
+    // Obtener información del usuario autenticado
     Route::get('/usuario', function () {
         return response()->json(['user' => auth()->user()]);
     });
