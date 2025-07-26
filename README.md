@@ -24,7 +24,7 @@ bash
 git clone https://github.com/tu-usuario/tienda-online.git
 cd tienda-online
 
-3. Configurar el Backend
+2. Configurar el Backend
    
 bash
 cd tienda-online-api
