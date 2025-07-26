@@ -13,6 +13,7 @@ CI/CD: GitHub Actions (test automático antes de merge)
 
 📁 Estructura del Proyecto
 📦 tienda-online
+
 ├── tienda-online-api        # API en Laravel
 └── tienda-online-frontend   # Frontend en React
 
