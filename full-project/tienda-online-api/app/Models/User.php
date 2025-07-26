@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Tymon\JWTAuth\Contracts\JWTSubject; // ✅ Importamos la interfaz obligatoria
+use Tymon\JWTAuth\Contracts\JWTSubject; // Implementa la interfaz para usar JWT
 
 class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * Los atributos que se pueden asignar en masa.
+     * Atributos que pueden asignarse masivamente
      *
      * @var array<int, string>
      */
@@ -26,7 +26,7 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * Los atributos que se ocultan en la serialización.
+     * Atributos que se ocultan al convertir el modelo a JSON
      *
      * @var array<int, string>
      */
@@ -36,26 +36,29 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * Casts automáticos de atributos.
+     * Conversión automática de tipos para ciertos atributos
      *
      * @return array<string, string>
      */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'email_verified_at' => 'datetime', // Convierte a objeto DateTime
+            'password' => 'hashed',            // Hashea automáticamente al guardar
         ];
     }
 
     /**
-     * Implementación de JWTSubject
+     * Devuelve el identificador que se almacenará en el token JWT
      */
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
+    /**
+     * Devuelve un array con claims personalizados para JWT (vacío en este caso)
+     */
     public function getJWTCustomClaims()
     {
         return [];
