@@ -12,11 +12,12 @@ use App\Models\Producto;
 
 class CompraController extends Controller
 {
+    // Confirmar una compra desde productos enviados o desde el carrito
     public function confirmar(Request $request)
     {
         $user = Auth::user();
 
-        // 1) Cargamos items desde request o desde carrito persistente
+        // Si se envían productos por request, los usamos
         if ($request->filled('productos')) {
             $data = $request->validate([
                 'productos'             => 'required|array|min:1',
@@ -26,6 +27,7 @@ class CompraController extends Controller
             $items       = $data['productos'];
             $fromRequest = true;
         } else {
+            // Si no se envían, tomamos los productos desde el carrito persistente
             $carrito = Carrito::with('producto')
                 ->where('user_id', $user->id)
                 ->get();
@@ -34,6 +36,7 @@ class CompraController extends Controller
                 return response()->json(['error' => 'El carrito está vacío'], 400);
             }
 
+            // Convertimos el carrito en un array de items con id y cantidad
             $items = $carrito->map(fn($c) => [
                 'id'       => $c->producto->id,
                 'cantidad' => $c->cantidad
@@ -43,7 +46,9 @@ class CompraController extends Controller
         }
 
         try {
+            // Ejecutamos todo en una transacción para mantener consistencia
             DB::transaction(function () use ($items, $user, &$order, $fromRequest) {
+                // Crear orden vacía inicialmente
                 $order = Order::create([
                     'user_id' => $user->id,
                     'total'   => 0
@@ -51,18 +56,20 @@ class CompraController extends Controller
                 $total = 0;
 
                 foreach ($items as $item) {
-                    // Bloqueamos la fila para prevenir condiciones de carrera
+                    // Bloquear la fila del producto para evitar condiciones de carrera
                     $producto = Producto::lockForUpdate()->findOrFail($item['id']);
 
-                    // **Mensaje exacto para el test de stock insuficiente**
+                    // Lanzar excepción si no hay suficiente stock
                     if ($producto->stock < $item['cantidad']) {
                         throw new \Exception(
                             "Stock insuficiente para el producto: {$producto->nombre}"
                         );
                     }
 
+                    // Descontar stock disponible
                     $producto->decrement('stock', $item['cantidad']);
 
+                    // Registrar cada producto en la orden
                     OrderItem::create([
                         'order_id'        => $order->id,
                         'producto_id'     => $producto->id,
@@ -70,37 +77,44 @@ class CompraController extends Controller
                         'precio_unitario' => $producto->precio,
                     ]);
 
+                    // Calcular subtotal para acumular el total
                     $total += $producto->precio * $item['cantidad'];
                 }
 
+                // Actualizar total de la orden
                 $order->update(['total' => $total]);
 
+                // Si los productos venían del carrito, vaciarlo
                 if (! $fromRequest) {
                     Carrito::where('user_id', $user->id)->delete();
                 }
             });
         } catch (\Exception $e) {
+            // En caso de error, retornar mensaje y status 400
             return response()->json([
                 'error' => $e->getMessage()
             ], 400);
         }
 
-        // **Status 200** para que el test “usuario puede confirmar compra” pase
+        // Respuesta exitosa con ID de la orden
         return response()->json([
             'message'  => 'Compra confirmada',
             'order_id' => $order->id
         ], 200);
     }
 
+    // Devuelve el historial de compras del usuario autenticado
     public function historial()
     {
         $user = Auth::user();
 
+        // Consultar órdenes del usuario con sus productos
         $orders = Order::with(['items.producto'])
             ->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // Mapear datos de órdenes en formato legible
         $resultado = $orders->map(function ($order) {
             return [
                 'id'        => $order->id,
@@ -116,6 +130,7 @@ class CompraController extends Controller
             ];
         });
 
+        // Devolver historial en formato JSON
         return response()->json(['historial' => $resultado]);
     }
 }
