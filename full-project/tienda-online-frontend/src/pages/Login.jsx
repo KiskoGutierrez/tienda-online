@@ -8,15 +8,18 @@ import { AppContext } from '../context/AppContext'
 import { GoogleLogin } from '@react-oauth/google'
 
 export default function Login() {
+  // Estados para email, contraseña, errores y carga
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loadingLogin, setLoadingLogin] = useState(false)
 
+  // Contexto para login/logout y token
   const { login, logout, token, user } = useContext(AppContext)
+  // Hook para navegación
   const navigate = useNavigate()
 
-  // Si ya hay sesión activa, mostramos mensaje y botón de logout
+  // Si ya hay sesión activa, mostramos mensaje y botón para cerrar sesión
   if (token) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -39,7 +42,7 @@ export default function Login() {
     )
   }
 
-  // Maneja el login con email/password
+  // Maneja login con email y contraseña
   const handleLocal = async (e) => {
     e.preventDefault()
     setError('')
@@ -49,7 +52,7 @@ export default function Login() {
       const res = await apiLoginLocal({ email, password })
       const jwt = res.data.access_token
       login(jwt)
-      // redirige inmediatamente al Home
+      // Redirige al home al iniciar sesión correctamente
       navigate('/', { replace: true })
     } catch {
       setError('🚫 Credenciales inválidas')
@@ -58,7 +61,7 @@ export default function Login() {
     }
   }
 
-  // Maneja el login con Google
+  // Maneja login con Google usando el token recibido
   const handleGoogleSuccess = async ({ credential }) => {
     setError('')
     setLoadingLogin(true)
@@ -83,6 +86,7 @@ export default function Login() {
 
   return (
     <div className="relative max-w-sm mx-auto p-4">
+      {/* Overlay de carga mientras se inicia sesión */}
       {loadingLogin && (
         <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center rounded">
           <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
@@ -92,8 +96,10 @@ export default function Login() {
 
       <h1 className="text-2xl font-semibold mb-4">Iniciar Sesión</h1>
 
+      {/* Mostrar errores */}
       {error && <p className="text-red-600 mb-2">{error}</p>}
 
+      {/* Formulario login local */}
       <form onSubmit={handleLocal} className="space-y-4">
         <input
           type="email"
@@ -146,6 +152,7 @@ export default function Login() {
         </button>
       </form>
 
+      {/* Login con Google */}
       <div className="mt-6 flex justify-center">
         <GoogleLogin
           onSuccess={handleGoogleSuccess}
