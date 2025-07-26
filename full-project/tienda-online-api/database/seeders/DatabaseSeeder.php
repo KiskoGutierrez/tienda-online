@@ -7,11 +7,11 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Ejecuta los seeders para poblar la base de datos.
      */
     public function run(): void
     {
+        // Llama al seeder ProductoSeeder para insertar datos de productos
         $this->call(ProductoSeeder::class);
     }
-
 }
