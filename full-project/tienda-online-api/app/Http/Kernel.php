@@ -7,46 +7,46 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 class Kernel extends HttpKernel
 {
     /**
-     * The application's global HTTP middleware stack.
+     * Middleware global que se ejecuta en cada solicitud HTTP
      */
     protected $middleware = [
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
-        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
-        \App\Http\Middleware\TrimStrings::class,
-        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class, // Modo mantenimiento
+        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,        // Límite de tamaño POST
+        \App\Http\Middleware\TrimStrings::class,                               // Elimina espacios en strings
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class, // Convierte strings vacíos a null
     ];
 
     /**
-     * The application's route middleware groups.
+     * Middleware por grupos de rutas (web y api)
      */
     protected $middlewareGroups = [
         'web' => [
-            \App\Http\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \App\Http\Middleware\VerifyCsrfToken::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\EncryptCookies::class,                        // Encripta cookies
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,  // Añade cookies a la respuesta
+            \Illuminate\Session\Middleware\StartSession::class,               // Inicia sesión
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,        // Comparte errores con vistas
+            \App\Http\Middleware\VerifyCsrfToken::class,                      // Verifica CSRF
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,        // Enlaza rutas a modelos
         ],
 
         'api' => [
-            'throttle:api',
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            'throttle:api',                                                   // Limita peticiones por tiempo
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,        // Enlaza rutas a modelos
         ],
     ];
 
     /**
-     * The application's route middleware.
+     * Middleware asignables a rutas individuales
      */
     protected $routeMiddleware = [
-        // Laravel default
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        // Middleware por defecto de Laravel
+        'auth' => \App\Http\Middleware\Authenticate::class,                   // Autenticación de usuarios
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class, // Auth HTTP básica
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,       // Enlaza modelos
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,         // Limita solicitudes
 
-        // ✅ JWT Middleware (¡esto es lo que tú necesitas!)
-        'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
-        'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
+        // Middleware para autenticación con JWT
+        'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,    // Verifica token JWT válido
+        'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class, // Refresca token JWT
     ];
 }
