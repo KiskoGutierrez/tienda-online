@@ -12,6 +12,7 @@ Autenticación: OAuth2 con Google
 CI/CD: GitHub Actions (test automático antes de merge)
 
 📁 Estructura del Proyecto
+
 📦 tienda-online
 
 ├── tienda-online-api        # API en Laravel
