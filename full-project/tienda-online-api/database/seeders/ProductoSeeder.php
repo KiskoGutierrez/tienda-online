@@ -7,8 +7,12 @@ use App\Models\Producto;
 
 class ProductoSeeder extends Seeder
 {
+    /**
+     * Inserta productos predeterminados en la base de datos.
+     */
     public function run(): void
     {
+        // Array con los datos de los productos a insertar
         $productos = [
             [
                 'nombre' => 'Camiseta Pilot',
@@ -42,6 +46,7 @@ class ProductoSeeder extends Seeder
             ]
         ];
 
+        // Inserta cada producto en la tabla 'productos' usando el modelo Producto
         foreach ($productos as $producto) {
             Producto::create($producto);
         }
