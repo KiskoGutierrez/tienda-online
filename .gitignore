@@ -1,0 +1,80 @@
+# -----------------------
+# Laravel (Backend)
+# -----------------------
+
+# dependencias de Composer
+tienda-online-api/vendor/
+
+# variables de entorno
+tienda-online-api/.env
+tienda-online-api/.env.*.local
+
+# archivos generados/runtime (excepto los app y public que sí versionamos)
+tienda-online-api/storage/
+!tienda-online-api/storage/app/
+!tienda-online-api/storage/app/public/
+
+# caché compilado del framework
+tienda-online-api/bootstrap/cache/
+
+# enlace simbólico de /public/storage
+tienda-online-api/public/storage/
+
+# logs y caché de tests
+*.log
+.phpunit.result.cache
+
+# Homestead
+Homestead.json
+Homestead.yaml
+
+# -----------------------
+# Node.js (Frontend)
+# -----------------------
+
+# dependencias de NPM/Yarn
+tienda-online-frontend/node_modules/
+
+# artefactos de build
+tienda-online-frontend/dist/
+tienda-online-frontend/build/
+
+# variables locales de frontend
+tienda-online-frontend/.env.local
+
+# logs de npm/yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# -----------------------
+# IDEs y editores
+# -----------------------
+
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# -----------------------
+# S.O. y extras
+# -----------------------
+
+.DS_Store
+Thumbs.db
+*.key
+
+# -----------------------
+# Composer
+# -----------------------
+
+# composer.lock debe versionarse para reproducibilidad
+
+# -----------------------
+# Excepciones para copia completa
+# -----------------------
+
+# Si tienes un subdirectorio "full-project" que sí quieres versionar con vendor y node_modules:
+!full-project/
+!full-project/tienda-online-api/vendor/
+!full-project/tienda-online-frontend/node_modules/

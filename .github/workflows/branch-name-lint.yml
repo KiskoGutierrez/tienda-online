@@ -1,0 +1,21 @@
+name: "Validar nombre de rama"
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  branch-name-lint:
+    if: ${{ github.ref != 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Linter de nombre de rama
+        uses: amitsingh-007/branch-name-linter-action@v2
+        with:
+          regex: '^(feature|bugfix)\/[a-z0-9]+(?:[._-][a-z0-9]+)*$'
