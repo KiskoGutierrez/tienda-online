@@ -5,6 +5,7 @@ import { getImageUrl } from '../utils/getImageUrl'
 import confetti from 'canvas-confetti'
 
 export default function Carrito() {
+  // Obtiene estados y funciones del contexto global
   const {
     carrito,
     clearCart,
@@ -14,18 +15,22 @@ export default function Carrito() {
     token
   } = useContext(AppContext)
 
+  // Estados locales para mensajes, error, carga y modal
   const [mensaje, setMensaje] = useState('')
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
   const [mostrarModal, setMostrarModal] = useState(false)
 
+  // Calcula el total del carrito sumando precio por cantidad
   const total = Array.isArray(carrito)
     ? carrito.reduce((acc, p) => acc + Number(p.precio) * p.cantidad, 0)
     : 0
 
+  // Función para lanzar confeti visual tras compra exitosa
   const lanzarConfeti = () =>
     confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } })
 
+  // Maneja la confirmación de compra con validaciones y llamada API
   const handleCompra = async () => {
     if (!token) {
       setError('🚫 Debes iniciar sesión para confirmar la compra.')
@@ -36,6 +41,7 @@ export default function Carrito() {
       return
     }
 
+    // Verifica si hay productos sin stock suficiente
     const sinStock = carrito.filter(p => p.cantidad > p.stock)
     if (sinStock.length) {
       setError(`🚫 Sin stock de: ${sinStock.map(p => p.nombre).join(', ')}`)
@@ -47,11 +53,11 @@ export default function Carrito() {
     setError('')
 
     try {
-      await confirmarCompra(carrito, token)
-      clearCart()
+      await confirmarCompra(carrito, token) // Llama a la API para confirmar compra
+      clearCart() // Limpia el carrito tras compra exitosa
       setMensaje('✅ Compra realizada con éxito')
       lanzarConfeti()
-      setMostrarModal(true)
+      setMostrarModal(true) // Muestra modal de confirmación
     } catch (err) {
       console.error('Error al confirmar compra:', err.response?.data || err)
       const msg =
@@ -68,6 +74,7 @@ export default function Carrito() {
     <div className="max-w-xl mx-auto p-4">
       <h2 className="text-xl font-bold mb-4">Tu Carrito</h2>
 
+      {/* Muestra mensajes de éxito o error */}
       {mensaje && <p className="text-green-600 mb-2">{mensaje}</p>}
       {error && <p className="text-red-600 mb-2">{error}</p>}
 
@@ -86,6 +93,7 @@ export default function Carrito() {
                   key={producto.id}
                   className="border p-4 rounded-lg flex gap-4 items-start"
                 >
+                  {/* Imagen del producto con fallback */}
                   <img
                     src={imgUrl}
                     alt={producto.nombre}
@@ -97,6 +105,7 @@ export default function Carrito() {
 
                   <div className="flex-1">
                     <p className="font-semibold">{producto.nombre}</p>
+                    {/* Muestra stock restante o agotado */}
                     <p
                       className={`text-sm mb-2 ${
                         restante > 0 ? 'text-gray-600' : 'text-red-600'
@@ -105,6 +114,7 @@ export default function Carrito() {
                       {restante > 0 ? `Quedan ${restante}` : 'Agotado'}
                     </p>
 
+                    {/* Botones para cambiar cantidad */}
                     <div className="flex items-center space-x-2 mt-2">
                       <button
                         onClick={() => decreaseQty(producto.id)}
@@ -127,6 +137,7 @@ export default function Carrito() {
                       </button>
                     </div>
 
+                    {/* Precio unitario y subtotal del producto */}
                     <p className="mt-2">
                       Precio unitario:{' '}
                       {Number(producto.precio).toLocaleString('es-ES', {
@@ -145,6 +156,7 @@ export default function Carrito() {
                     </p>
                   </div>
 
+                  {/* Botón para quitar producto del carrito */}
                   <button
                     onClick={() => removeFromCart(producto.id)}
                     className="text-red-600 hover:underline text-sm self-start"
@@ -156,6 +168,7 @@ export default function Carrito() {
             })}
           </ul>
 
+          {/* Total y botón para confirmar compra */}
           <div className="mt-6 border-t pt-4 flex justify-between items-center">
             <p className="text-lg font-semibold">
               Total:{' '}
@@ -175,6 +188,7 @@ export default function Carrito() {
         </>
       )}
 
+      {/* Modal que se muestra tras compra exitosa */}
       {mostrarModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 text-center shadow-lg max-w-sm mx-auto">
