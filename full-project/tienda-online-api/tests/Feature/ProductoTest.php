@@ -10,9 +10,10 @@ class ProductoTest extends TestCase
 {
     use RefreshDatabase;
 
+    // Test para que el usuario vea listado de productos con paginación básica
     public function test_usuario_ve_listado_de_productos(): void
     {
-        // ✅ Creamos suficientes productos para activar paginación
+        // Creamos 20 productos para probar paginación
         Producto::factory()->count(20)->create();
 
         $response = $this->getJson('/api/productos');
@@ -25,6 +26,7 @@ class ProductoTest extends TestCase
         $this->assertGreaterThanOrEqual(10, count($json['data']));
     }
 
+    // Test para comprobar paginación en la página 1 (máximo 10 productos)
     public function test_listado_de_productos_paginado()
     {
         Producto::factory()->count(25)->create();
@@ -39,6 +41,7 @@ class ProductoTest extends TestCase
         $this->assertLessThanOrEqual(10, count($json['data']));
     }
 
+    // Test para filtrar productos por nombre (search)
     public function test_filtro_de_productos_por_nombre()
     {
         Producto::create([
@@ -59,6 +62,7 @@ class ProductoTest extends TestCase
         $response->assertJsonMissing(['nombre' => 'Camiseta blanca']);
     }
 
+    // Test para ordenar productos por precio descendente
     public function test_orden_de_productos_por_precio_descendente()
     {
         Producto::create([
