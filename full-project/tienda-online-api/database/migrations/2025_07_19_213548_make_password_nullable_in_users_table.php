@@ -7,22 +7,24 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ejecuta la migración (modifica la tabla 'users').
      */
     public function up(): void
     {
+        // Aquí se podrían agregar nuevas columnas o cambios a la tabla 'users'
         Schema::table('users', function (Blueprint $table) {
-            //
+            // Actualmente vacío: no se está aplicando ningún cambio
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Revierte la migración (revierte los cambios aplicados en 'up').
      */
     public function down(): void
     {
+        // Aquí se deberían revertir los cambios realizados en 'up'
         Schema::table('users', function (Blueprint $table) {
-            //
+            // Actualmente vacío: no se está revirtiendo ningún cambio
         });
     }
 };
