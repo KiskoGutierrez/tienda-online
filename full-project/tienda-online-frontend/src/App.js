@@ -15,21 +15,27 @@ import { AppContext } from './context/AppContext'
 import { fetchUsuario } from './services/api'
 
 export default function App() {
+  // Extraemos carrito, token y función logout del contexto global
   const { carrito, token, logout } = useContext(AppContext)
+  // Estado para almacenar datos del usuario autenticado
   const [usuario, setUsuario] = useState(null)
+  // Estado para controlar la redirección tras logout
   const [redirigir, setRedirigir] = useState(false)
 
+  // Hook que se ejecuta cuando cambia el token
   useEffect(() => {
     if (token) {
+      // Si hay token, intenta obtener los datos del usuario
       fetchUsuario(token)
-        .then((res) => setUsuario(res.data.user))
-        .catch(() => setUsuario(null))
+        .then((res) => setUsuario(res.data.user)) // Guarda datos usuario
+        .catch(() => setUsuario(null)) // En caso de error, limpia usuario
     } else {
+      // Si no hay token, limpia usuario
       setUsuario(null)
     }
   }, [token])
 
-  // Cierre de sesión con redirección
+  // Función para cerrar sesión y activar redirección a login
   const cerrarSesion = () => {
     logout()
     setRedirigir(true)
@@ -37,8 +43,10 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      {/* Barra de navegación con enlaces */}
       <nav className="bg-white shadow p-4 flex items-center justify-between">
         <div className="flex gap-4">
+          {/* Enlaces principales */}
           <NavLink
             to="/"
             className={({ isActive }) =>
@@ -65,12 +73,13 @@ export default function App() {
           </NavLink>
         </div>
 
+        {/* Sección derecha con carrito y estado usuario */}
         <div className="flex items-center gap-4">
+          {/* Icono del carrito con contador */}
           <NavLink
             to="/carrito"
             className="relative ml-6 sm:ml-0"
           >
-
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6 text-gray-600 hover:text-blue-600"
@@ -85,6 +94,7 @@ export default function App() {
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.35 2.7a1 1 0 00.9 1.45H17m0 0a1 1 0 001-1H6.4M17 13l1.35 2.7m0 0L20 21H4l1.35-5.3"
               />
             </svg>
+            {/* Si hay productos en el carrito, mostrar contador */}
             {carrito.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-1">
                 {carrito.length}
@@ -92,6 +102,7 @@ export default function App() {
             )}
           </NavLink>
 
+          {/* Mostrar datos de usuario o mensaje si no ha iniciado sesión */}
           {usuario ? (
             <div className="flex items-center gap-2 text-sm text-green-700">
               <span>{usuario.name || usuario.email}</span>
@@ -108,7 +119,9 @@ export default function App() {
         </div>
       </nav>
 
+      {/* Contenido principal y rutas */}
       <main className="p-6">
+        {/* Si se ha cerrado sesión, redirigir a login */}
         {redirigir && <Navigate to="/login" replace />}
         <Routes>
           <Route path="/" element={<Home />} />
