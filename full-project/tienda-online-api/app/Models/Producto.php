@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Producto extends Model
 {
-    use HasFactory;
+    use HasFactory; // Habilita el uso de factories para pruebas y seeders
 
+    // Permite asignación masiva de los campos definidos
     protected $fillable = [
         'nombre',
         'precio',
