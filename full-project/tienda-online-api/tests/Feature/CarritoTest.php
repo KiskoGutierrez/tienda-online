@@ -12,8 +12,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CarritoTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase; // Resetea la base de datos para cada test
 
+    // Función privada para crear usuario y generar token JWT para autenticación
     private function crearUsuarioConToken()
     {
         $user = User::create([
@@ -27,6 +28,7 @@ class CarritoTest extends TestCase
         return [$user, $token];
     }
 
+    // Test para que el usuario pueda ver su carrito con autorización
     public function test_usuario_puede_ver_su_carrito()
     {
         [$user, $token] = $this->crearUsuarioConToken();
@@ -40,6 +42,7 @@ class CarritoTest extends TestCase
         $response->assertJsonStructure(['carrito']);
     }
 
+    // Test para que el usuario pueda agregar un producto al carrito
     public function test_usuario_puede_agregar_producto_al_carrito()
     {
         [$user, $token] = $this->crearUsuarioConToken();
@@ -58,9 +61,10 @@ class CarritoTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-        $response->assertJson(['message' => 'Producto añadido al carrito']); // 👈 corregido
+        $response->assertJson(['message' => 'Producto añadido al carrito']);
     }
 
+    // Test para que el usuario pueda eliminar un producto del carrito
     public function test_usuario_puede_eliminar_producto_del_carrito()
     {
         [$user, $token] = $this->crearUsuarioConToken();
@@ -85,6 +89,7 @@ class CarritoTest extends TestCase
         $response->assertJson(['message' => 'Producto eliminado del carrito']);
     }
 
+    // Test para confirmar compra, descontar stock y limpiar carrito
     public function test_usuario_puede_confirmar_compra_y_descontar_stock()
     {
         [$user, $token] = $this->crearUsuarioConToken();
@@ -108,11 +113,15 @@ class CarritoTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure(['message', 'order_id']);
 
+        // Refresca el producto para verificar que el stock fue descontado correctamente
         $producto->refresh();
         $this->assertEquals(3, $producto->stock);
+
+        // Verifica que el carrito quedó vacío para el usuario
         $this->assertDatabaseMissing('carritos', ['user_id' => $user->id]);
     }
 
+    // Test para ver historial de compras de usuario
     public function test_usuario_ve_historial_de_compras()
     {
         [$user, $token] = $this->crearUsuarioConToken();
@@ -129,6 +138,7 @@ class CarritoTest extends TestCase
             'cantidad' => 1
         ]);
 
+        // Primero hace una compra para generar historial
         $this->withHeaders(['Authorization' => 'Bearer ' . $token])
             ->postJson('/api/compra');
 
@@ -140,6 +150,7 @@ class CarritoTest extends TestCase
         $response->assertJsonStructure(['historial']);
     }
 
+    // Test para verificar que compra falla si no hay stock suficiente
     public function test_compra_falla_con_stock_insuficiente()
     {
         [$user, $token] = $this->crearUsuarioConToken();
@@ -164,6 +175,7 @@ class CarritoTest extends TestCase
         $response->assertJson(['error' => 'Stock insuficiente para el producto: Sin Stock']);
     }
 
+    // Test para verificar que compra falla si el carrito está vacío
     public function test_compra_falla_con_carrito_vacio()
     {
         [$user, $token] = $this->crearUsuarioConToken();
@@ -176,6 +188,7 @@ class CarritoTest extends TestCase
         $response->assertJson(['error' => 'El carrito está vacío']);
     }
 
+    // Test para verificar que acceso a rutas protegidas falla sin token
     public function test_acceso_falla_sin_token()
     {
         $response = $this->getJson('/api/carrito');
