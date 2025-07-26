@@ -7,25 +7,26 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ejecuta la migración (crea la tabla).
      */
     public function up(): void
     {
+        // Crea la tabla 'productos'
         Schema::create('productos', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre');
-            $table->decimal('precio', 8, 2);
-            $table->integer('stock')->default(0);
-            $table->string('imagen')->nullable();
-            $table->timestamps();
+            $table->id(); // ID autoincremental del producto
+            $table->string('nombre'); // Nombre del producto
+            $table->decimal('precio', 8, 2); // Precio con hasta 8 dígitos en total y 2 decimales
+            $table->integer('stock')->default(0); // Cantidad en stock (por defecto 0)
+            $table->string('imagen')->nullable(); // Ruta o nombre de imagen (puede ser nulo)
+            $table->timestamps(); // Campos created_at y updated_at
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Revierte la migración (elimina la tabla).
      */
     public function down(): void
     {
-        Schema::dropIfExists('productos');
+        Schema::dropIfExists('productos'); // Elimina la tabla 'productos'
     }
 };
